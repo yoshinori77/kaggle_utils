@@ -1,0 +1,36 @@
+timezone: Asia/Tokyo
+
+_export:
+  plugin:
+    repositories:
+      - https://jitpack.io
+    dependencies:
+      - com.github.szyn:digdag-slack:0.1.4
+  webhook_url: ${secret:slack.webhook_url}
+  # td:
+  #   database: mansion
+  workflow_name: kaggle
+
+# _error:
+#   slack>: notifier/error_template.yml
+
++learning:
+  # +prepare_data:
+  #   _env:
+  #     TD_APIKEY: ${secret:td.apikey}
+  #   py>: update_building_price_estimate.tasks.prepare_data
+  +preprocess:
+    py>: update_building_price_estimate.tasks.preprocess
+  +train:
+    py>: update_building_price_estimate.tasks.train
+  +predict:
+    py>: update_building_price_estimate.tasks.predict
+
+# +upload:
+#   _env:
+#     SESSION_TIME: ${session_unixtime}
+#     TD_APIKEY: ${secret:td.apikey}
+#   sh>: embulk run update_building_price_estimate/embulk/upload_estimate_price.yml.liquid
+
+# +notify_complete:
+#   slack>: notifier/success_template.yml
